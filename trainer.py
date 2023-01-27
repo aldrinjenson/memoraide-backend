@@ -7,7 +7,6 @@ import os
 
 
 def train():
-    print("inside train function")
     path = os.path.join(os.getcwd(), 'images')
     dls = ImageDataLoaders.from_folder(path, item_tfms=Resize(
         128), batch_tfms=aug_transforms(), valid_pct=0.2, seed=23, bs=16)

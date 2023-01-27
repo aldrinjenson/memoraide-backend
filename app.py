@@ -43,8 +43,8 @@ def upload():
     videoFile = request.files.get('file')
     # file.fileName = ther person's name (passed from client)
     filename = secure_filename(videoFile.filename)
-    filePath = os.path.join(app.config['UPLOAD_FOLDER'], filename+'.webm')
-    videoFile.save(filePath)
+    videoFilePath = os.path.join(app.config['UPLOAD_FOLDER'], filename+'.webm')
+    videoFile.save(videoFilePath)
 
     imagesFolderName = IMAGES_FOLDER + '/' + filename
     frameNr = 0
@@ -54,7 +54,7 @@ def upload():
     else:
         os.makedirs(imagesFolderName)
 
-    capture = cv2.VideoCapture(filePath)
+    capture = cv2.VideoCapture(videoFilePath)
     imagePath = os.getcwd() + f'/images/{filename}'
 
     success = True
@@ -67,4 +67,6 @@ def upload():
     capture.release()
     print("going to train")
     threading.Thread(target=train).start()
+    os.remove(videoFilePath) # remove the video file saved
+
     return "file received and splitted successfully"
