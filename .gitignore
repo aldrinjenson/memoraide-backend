@@ -4,3 +4,4 @@ __pycache__
 videos/*
 *.pkl
 flagged/*
+*.mp4
