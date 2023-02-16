@@ -71,6 +71,7 @@ def createMovieFromUrls():
 @app.get("/createMovie/<folder_name>")
 def createMovie(folder_name: str):
     folder = f"images/{folder_name}/"
+    # folder = f"snaps/"
     image_files = [
         folder + f for f in os.listdir(folder) if f.endswith(".jpg")]
 
