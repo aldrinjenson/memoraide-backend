@@ -1,24 +1,71 @@
-
+from PIL import Image
+import requests
+from io import BytesIO
 from moviepy.editor import *
-from flask import Flask, current_app, url_for, request
+from flask import Flask, current_app, url_for, request, send_file
 import os
 from werkzeug.utils import secure_filename
 from markupsafe import escape
 import cv2
 from trainer import train
 import threading
+from flask_cors import CORS
 
 
 UPLOAD_FOLDER = 'videos'
 IMAGES_FOLDER = 'images'
 
 app = Flask(__name__)
+CORS(app)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 
 @app.get("/")
 def home():
     return current_app.send_static_file("index.html")
+
+
+@app.route('/video')
+def serve_video():
+    return send_file('output.mp4', mimetype='video/mp4')
+
+@app.route('/movieFromSnaps', methods=['POST'])
+def createMovieFromUrls():
+    images = request.get_json()['params']
+    print(images)
+
+    folder = f"snaps/"
+    os.makedirs(folder, exist_ok=True)
+
+    image_files = []
+    for image in images:
+        url = image["url"]
+        imgName = image["imgName"]
+        filename = os.path.join(folder, f"{imgName}.jpg")
+        if os.path.exists(filename):
+            image_files.append(filename)
+            print('continuing')
+            continue
+        print("moving forward")
+        print(imgName, url)
+        response = requests.get(url)
+        if response.status_code == 200:
+            image = Image.open(BytesIO(response.content))
+            filename = os.path.join(folder, f"{imgName}.jpg")
+            image.save(filename)
+            image_files.append(filename)
+
+    img_clips = [ImageClip(f).set_duration(2) for f in image_files]
+    video = concatenate_videoclips(img_clips)
+
+    music = AudioFileClip("bgSong.mp3")
+    audio = afx.audio_loop(music, duration=video.duration)
+    video = video.set_audio(audio)
+
+    outputFile="output.mp4"
+    video.write_videofile(outputFile, fps=60)
+
+    return outputFile
 
 
 @app.get("/createMovie/<folder_name>")
