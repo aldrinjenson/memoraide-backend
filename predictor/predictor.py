@@ -18,6 +18,6 @@ def predict(img):
     return {labels[i]: float(probs[i]) for i in range(len(labels))}
 
 
-interface = gr.Interface(fn=predict, inputs=gr.components.Image(shape=(512, 512)), outputs=gr.components.Label(
+gradioInterface = gr.Interface(fn=predict, inputs=gr.components.Image(shape=(512, 512)), outputs=gr.components.Label(
     num_top_classes=2), title=title, description=description, article=article, examples=examples, interpretation=interpretation)
-interface.launch(share=True, enable_queue=enable_queue)
+gradioInterface.launch(share=True, enable_queue=enable_queue)

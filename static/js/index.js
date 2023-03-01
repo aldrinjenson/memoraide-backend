@@ -20,10 +20,32 @@ const addNewVideoFeed = (videoSrc) => {
   newVid.controls = true;
   newVid.muted = true;
   newVid.autoplay = true;
-  newVid.style.width = '95%';
+  newVid.style.width = "95%";
   videoFeeds.append(newVid);
   intermediary_blobs_recorded = [];
 };
+
+let availableCameras = [];
+async function getCameras() {
+  const devices = await navigator.mediaDevices.enumerateDevices();
+  cameras = devices.filter((device) => device.kind === "videoinput");
+  return cameras;
+}
+
+let currCameraIndex = 0;
+switchCameraBtn.addEventListener("click", async () => {
+  console.log(availableCameras);
+  const newCam =
+    availableCameras[(currCameraIndex + 1) % availableCameras.length];
+  const newCamId = newCam.deviceId;
+  camera_stream = await navigator.getUserMedia({
+    video: {
+      deviceId: newCamId,
+      audio: false,
+    },
+  });
+  video.srcObject = camera_stream;
+});
 
 window.onload = async () => {
   statusMsg.innerText = "Camera loaded";
@@ -33,6 +55,7 @@ window.onload = async () => {
     audio: true,
   });
   video.srcObject = camera_stream;
+  availableCameras = await getCameras();
 };
 
 start_button.addEventListener("click", function () {
@@ -68,19 +91,23 @@ stop_button.addEventListener("click", function () {
 
 uploadBtn.addEventListener("click", () => {
   if (!personNameInput.value) {
-    return alert("Enter name")
+    return alert("Enter name");
   }
   var data = new FormData();
   data.append("file", finalRecoredVideoBlob, personNameInput.value);
   fetch("/upload", {
     method: "POST",
     body: data,
-  }).then((resp) => {
-    console.log(resp);
-    alert("File uploaded successfully and is being processed")
-    personNameInput.value = ""
-  }).catch(err => {
-    console.log(err);
-    alert("There seems to be some error in uploading file..  please check again")
   })
+    .then((resp) => {
+      console.log(resp);
+      alert("File uploaded successfully and is being processed");
+      personNameInput.value = "";
+    })
+    .catch((err) => {
+      console.log(err);
+      alert(
+        "There seems to be some error in uploading file..  please check again"
+      );
+    });
 });

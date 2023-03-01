@@ -11,7 +11,6 @@ from trainer import train
 import threading
 from flask_cors import CORS
 
-
 UPLOAD_FOLDER = 'videos'
 IMAGES_FOLDER = 'images'
 
@@ -28,6 +27,7 @@ def home():
 @app.route('/video')
 def serve_video():
     return send_file('output.mp4', mimetype='video/mp4')
+
 
 @app.route('/movieFromSnaps', methods=['POST'])
 def createMovieFromUrls():
@@ -62,7 +62,7 @@ def createMovieFromUrls():
     audio = afx.audio_loop(music, duration=video.duration)
     video = video.set_audio(audio)
 
-    outputFile="output.mp4"
+    outputFile = "output.mp4"
     video.write_videofile(outputFile, fps=60)
 
     return outputFile
@@ -115,6 +115,6 @@ def upload():
     capture.release()
     print("going to train")
     threading.Thread(target=train).start()
-    os.remove(videoFilePath) # remove the video file saved
+    os.remove(videoFilePath)  # remove the video file saved
 
     return "file received and splitted successfully"
