@@ -6,3 +6,4 @@ videos/*
 flagged/*
 *.mp4
 snaps/*
+nohup.out

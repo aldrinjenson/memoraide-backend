@@ -20,4 +20,5 @@ def predict(img):
 
 gradioInterface = gr.Interface(fn=predict, inputs=gr.components.Image(shape=(512, 512)), outputs=gr.components.Label(
     num_top_classes=2), title=title, description=description, article=article, examples=examples, interpretation=interpretation)
-gradioInterface.launch(share=False, enable_queue=enable_queue)
+gradioInterface.launch(
+    share=False, enable_queue=enable_queue, server_name="0.0.0.0")
